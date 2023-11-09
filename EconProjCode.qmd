@@ -1,0 +1,87 @@
+```{r}
+library(sf)
+library(dplyr)
+library(ggplot2)
+library(modelsummary)
+library(patchwork)
+library(tidyverse)
+```
+```{r}
+data <- read.csv(EconData)
+```
+```{r}
+# Install the required packages if you haven't already
+install.packages("ggplot2")
+install.packages("dplyr")
+
+# Load the required libraries
+library(ggplot2)
+library(dplyr)
+
+# Calculate the counts of each sub_event_type
+sub_event_type <- EconData$sub_event_type %>% table()
+
+# Create a data frame with the counts and sub_event_type names
+sub_event_type_df <- data.frame(sub_event_type = names(sub_event_type),
+                                count = as.numeric(sub_event_type),
+                                stringsAsFactors = FALSE)
+
+# Sort the data frame by count in descending order
+sub_event_type_df <- sub_event_type_df %>% arrange(desc(count))
+
+# Create the pie chart
+ggplot(sub_event_type_df, aes(x = "", y = count, fill = sub_event_type)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  labs(title = "Disorder Types") +
+  theme_void() +
+  theme(legend.position = "right")
+
+```
+```{r}
+# Install the required packages if you haven't already
+install.packages("dplyr")
+install.packages("purrr")
+install.packages("leaflet")
+install.packages("htmlwidgets")
+```
+
+
+```{r}
+# Install the required packages if you haven't already
+install.packages("dplyr")
+install.packages("leaflet")
+install.packages("leaflet.extras")
+
+# Load the required libraries
+library(dplyr)
+library(leaflet)
+library(leaflet.extras)
+
+# Assuming you have a DataFrame called 'EconData' with the necessary columns
+
+# Calculate the frequency of each location based on latitude and longitude
+location_frequency <- EconData %>%
+  group_by(latitude, longitude) %>%
+  summarise(frequency = n(), .groups = "drop")
+
+# Create a leaflet map centered at the mean latitude and longitude
+map_center <- c(mean(EconData$latitude), mean(EconData$longitude))
+mymap <- leaflet() %>%
+  setView(lng = map_center[2], lat = map_center[1], zoom = 4)
+
+# Add the heatmap layer to the map
+mymap <- addHeatmap(mymap, 
+                    data = location_frequency, 
+                    lng = ~longitude, 
+                    lat = ~latitude, 
+                    intensity = ~frequency, 
+                    blur = 10, 
+                    radius = 10)
+
+# Display the map
+mymap
+
+
+```
+
